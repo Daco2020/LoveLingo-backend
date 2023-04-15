@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import ORJSONResponse
 
 
 def init_views(app: FastAPI) -> None:
@@ -20,7 +19,7 @@ def create_app() -> FastAPI:
 
     app = FastAPI(
         openapi_url="/openapi.json",
-        default_response_class=ORJSONResponse,
+        # default_response_class=ORJSONResponse,
     )
 
     app.add_middleware(
