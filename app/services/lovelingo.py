@@ -1,4 +1,5 @@
 import random
+from typing import Any
 from app.models import LoveLingoChoice
 from collections import defaultdict
 from app.repositories.lovelingo import LoveLingoRepository
@@ -8,11 +9,22 @@ class LoveLingoService:
     def __init__(self, lovelingo_repo: LoveLingoRepository):
         self._lovelingo_repo = lovelingo_repo
 
-    async def get_result(self) -> None:
-        return None
+    async def get_result(self, answers: list[int]) -> list[dict[str, Any]] | None:
+        # TODO: validation 함수로 분리하기
+        if len(answers) != 15:
+            return None
+
+        love_lingos = await self._lovelingo_repo.fetch_love_lingo()
+        results = [love_lingo.to_dict() for love_lingo in love_lingos]
+
+        for id in answers:
+            for result in results:
+                if result["id"] == id:
+                    result["count"] += 1
+        return results
 
     async def fetch_choices(self) -> list[tuple[LoveLingoChoice, LoveLingoChoice]]:
-        raw_choices = await self._lovelingo_repo.fetch()
+        raw_choices = await self._lovelingo_repo.fetch_choices()
         return self._create_choices(raw_choices)
 
     def _create_choices(
@@ -29,6 +41,7 @@ class LoveLingoService:
 
         result_tuples = []
         for i in range(0, len(shuffled_id_list), 2):
+            # TODO: 한번 사용한 choice 는 제외하도록 보완 필요
             choice1 = [
                 choice
                 for choice in raw_choices

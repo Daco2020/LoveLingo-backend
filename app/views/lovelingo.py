@@ -1,6 +1,5 @@
 from typing import Any
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from fastapi import APIRouter, Body, Depends
 from app.models import LoveLingoChoice
 from app.repositories.lovelingo import MemoryLoveLingoRepository
 
@@ -28,14 +27,9 @@ async def fetch_choices(
     return lovelingo
 
 
-class Answers(BaseModel):
-    answers: list[str]  # ["A", "B", "C", "e", "d"]
-    duration_time: str  # 00:15:23
-
-
-@router.post("/results", response_model=None)
+@router.post("/results")
 async def get_result(
-    answers: Answers,
+    answers: list[int] = Body(embed=True, default=[]),
     lovelingo_service: LoveLingoService = Depends(lovelingo_service),
-) -> None:
-    await lovelingo_service.get_result()
+):
+    return await lovelingo_service.get_result(answers)

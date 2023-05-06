@@ -90,7 +90,11 @@ choice_table = [
 
 class LoveLingoRepository(abc.ABC):
     @abc.abstractmethod
-    async def fetch(self) -> list[LoveLingoChoice]:
+    async def fetch_choices(self) -> list[LoveLingoChoice]:
+        ...
+
+    @abc.abstractmethod
+    async def fetch_love_lingo(self) -> list[LoveLingo]:
         ...
 
 
@@ -103,5 +107,8 @@ class MemoryLoveLingoRepository(LoveLingoRepository):
         self._love_lingo_table = love_lingo_table
         self._choice_table = choice_table
 
-    async def fetch(self) -> list[LoveLingoChoice]:
+    async def fetch_choices(self) -> list[LoveLingoChoice]:
         return self._choice_table
+
+    async def fetch_love_lingo(self) -> list[LoveLingo]:
+        return self._love_lingo_table
